@@ -1,0 +1,223 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>College Dashboard - Student Details</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/minty/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://fonts.googleapis.com/css2?family=Roboto+Mono&display=swap"
+      rel="stylesheet"
+    />
+
+    <style>
+      html, body { height: 100%; margin: 0; padding: 0; }
+      body { display: flex; flex-direction: column; min-height: 100vh; background-color: #f8f9fa;}
+      .content-wrapper { flex: 1; }
+      header { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: linear-gradient(to bottom right, #1e054a, #6a2b9e); position: sticky; top: 0; z-index: 1021; }
+      .header-logo { height: 400px; width: auto; position: relative; top: 100px; left: 10px; }
+      .sidebar { height: 100vh; position: fixed; top: 0; left: -250px; background-color: #f8f9fa; width: 240px; padding-top: 20px; transition: left 0.3s; z-index: 1030; }
+      .sidebar.active { left: 0; }
+      #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1025; display: none; }
+      #overlay.active { display: block; }
+      .sidebar a { display: block; color: #333; padding: 10px 15px; text-decoration: none; }
+      .sidebar a:hover { background-color: #ddd; }
+      .form-container { background: #e9ecef; border-radius: 10px; padding: 20px; max-width: 800px; margin: 20px auto; box-shadow: 0px 4px 6px rgba(21, 0, 0, 0.1); }
+      .footer { background: linear-gradient(to bottom right, #1e054a, #6a2b9e); color: white; padding: 10px 20px; text-align: center; width: 100%; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light px-3">
+      <span style="font-size: 50px; color: white; cursor: pointer" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
+      <img src="academix_nobg.png" alt="Academix Logo" class="header-logo" />
+    </header>
+    <div id="overlay" onclick="toggleSidebar()"></div>
+
+    <div class="sidebar" id="sidebar">
+        <a href="ip.html">Dashboard</a>
+        <a href="attendance.html">Attendance</a>
+        <a href="performance.html">Performance</a>
+        <a href="studentdetails.html">Student Details</a>
+        <a href="teacher_todo.html">To-Do List</a>
+        <a href="profile.html">Profile</a>
+        <a href="main.html">Logout</a>
+    </div>
+
+    <div class="content-wrapper p-4">
+      <form class="form-container" id="student-form">
+        <fieldset>
+          <legend><h2 style="font-family: 'Roboto Mono', monospace; font-weight: bold"><b>Student Details</b></h2></legend>
+          <!-- All your form fields here... -->
+          <div class="mb-3"><label for="studentName" class="form-label">Name *</label><input type="text" class="form-control" id="studentName" placeholder="Enter student name" required /></div>
+          <div class="mb-3"><label for="usnField" class="form-label">USN *</label><input type="text" class="form-control" id="usnField" placeholder="Enter USN" required /></div>
+          <div class="mb-3"><label for="branchSelect" class="form-label">Branch *</label><select class="form-select" id="branchSelect" required><option value="" selected disabled>Select a branch</option><option value="ISE">ISE</option><option value="CSE">CSE</option><option value="ECE">ECE</option></select></div>
+          <div class="mb-3"><label class="form-label">Section *</label><div class="form-check"><input class="form-check-input" type="radio" name="section" id="sectionA" value="A" required /><label class="form-check-label" for="sectionA">Section A</label></div><div class="form-check"><input class="form-check-input" type="radio" name="section" id="sectionB" value="B" /><label class="form-check-label" for="sectionB">Section B</label></div></div>
+          <div class="mb-3">
+    <label for="test1" class="form-label">Test 1 Marks (out of 30)</label>
+    <input type="number" class="form-control" id="test1" placeholder="Enter Test 1 marks" max="30" min="0">
+</div>
+<div class="mb-3">
+    <label for="test2" class="form-label">Test 2 Marks (out of 30)</label>
+    <input type="number" class="form-control" id="test2" placeholder="Enter Test 2 marks" max="30" min="0">
+</div>
+<div class="mb-3">
+    <label for="quiz" class="form-label">Quiz Marks (out of 10)</label>
+    <input type="number" class="form-control" id="quiz" placeholder="Enter Quiz marks" max="10" min="0">
+</div>
+<div class="mb-3">
+    <label for="assignment" class="form-label">Assignment Marks (out of 10)</label>
+    <input type="number" class="form-control" id="assignment" placeholder="Enter Assignment marks" max="10" min="0">
+</div>
+
+          <button type="submit" class="btn btn-primary">Save Changes</button>
+        </fieldset>
+      </form>
+
+<div class="container mt-4">
+        <hr>
+        <h3>Existing Students</h3>
+        <div id="message-box" class="alert" role="alert" style="display: none;"></div>
+        <div class="table-responsive">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th>Name</th>
+                        <th>USN</th>
+                        <th>Branch</th>
+                        <th>Section</th>
+                        <th>Test 1</th>
+                        <th>Test 2</th>
+                        <th>Quiz</th>
+                        <th>Assignment</th>
+                    </tr>
+                </thead>
+                <tbody id="student-list-body"></tbody>
+            </table>
+        </div>
+      </div>
+    </div>
+
+    <!-- 1. ADDED: Success Modal HTML -->
+    <div class="modal fade" id="successModal" tabindex="-1" aria-labelledby="successModalLabel" aria-hidden="true">
+        <div class="modal-dialog">
+            <div class="modal-content">
+                <div class="modal-header">
+                    <h5 class="modal-title" id="successModalLabel">Success!</h5>
+                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+                </div>
+                <div class="modal-body">
+                    Student information updated successfully!
+                </div>
+                <div class="modal-footer">
+                    <button type="button" class="btn btn-primary" data-bs-dismiss="modal">OK</button>
+                </div>
+            </div>
+        </div>
+    </div>
+
+
+    <footer class="footer">
+      <p>&copy; 2025 Academix</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const studentForm = document.getElementById('student-form');
+        const studentListBody = document.getElementById('student-list-body');
+        const messageBox = document.getElementById('message-box');
+        
+        // 2. MODIFIED: Get a reference to the success modal
+        const successModal = new bootstrap.Modal(document.getElementById('successModal'));
+
+        async function loadStudents() {
+            try {
+                const response = await fetch(`${API_URL}/students`);
+                const result = await response.json();
+                studentListBody.innerHTML = ''; 
+                if (response.ok) {
+                    // Update colspan to 10 for the new table structure
+                    if (result.data.length === 0) {
+                         studentListBody.innerHTML = `<tr><td colspan="10" class="text-center">No students found.</td></tr>`;
+                    } else {
+                        result.data.forEach(student => {
+                            const row = document.createElement('tr');
+                            // Add the new data cells for the marks
+                            row.innerHTML = `
+                                <td>${student.name}</td>
+                                <td>${student.usn}</td>
+                                <td>${student.branch || 'N/A'}</td>
+                                <td>${student.section || 'N/A'}</td>
+                                <td>${student.test1 || 'N/A'}</td>
+                                <td>${student.test2 || 'N/A'}</td>
+                                <td>${student.quiz || 'N/A'}</td>
+                                <td>${student.assignment || 'N/A'}</td>
+                            `;
+                            studentListBody.appendChild(row);
+                        });
+                    }
+                } else {
+                     studentListBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Error loading students.</td></tr>`;
+                }
+            } catch (error) {
+                console.error('Failed to load students:', error);
+                studentListBody.innerHTML = `<tr><td colspan="10" class="text-center text-danger">Could not connect to the server.</td></tr>`;
+            }
+        }
+        // In studentdetails.html, inside the <script> tag
+studentForm.addEventListener('submit', async (e) => {
+    e.preventDefault();
+    const getRadioValue = (name) => document.querySelector(`input[name="${name}"]:checked`)?.value || null;
+    const studentData = {
+        name: document.getElementById('studentName').value,
+        usn: document.getElementById('usnField').value,
+        branch: document.getElementById('branchSelect').value,
+        section: getRadioValue('section'),
+        test1: document.getElementById('test1').value || null, // Updated
+        test2: document.getElementById('test2').value || null, // Updated
+        quiz: document.getElementById('quiz').value || null, // New
+        assignment: document.getElementById('assignment').value || null, // New
+    };
+
+    try {
+        const response = await fetch(`${API_URL}/students`, {
+            method: 'POST',
+            headers: { 'Content-Type': 'application/json' },
+            body: JSON.stringify(studentData),
+        });
+        
+        if (response.ok) {
+            successModal.show();
+        } else {
+            const result = await response.json();
+            messageBox.style.display = 'block';
+            messageBox.classList.add('alert-danger');
+            messageBox.textContent = `Error: ${result.error}`;
+            setTimeout(() => { messageBox.style.display = 'none'; }, 4000);
+        }
+    } catch (error) {
+        messageBox.style.display = 'block';
+        messageBox.classList.add('alert-danger');
+        messageBox.textContent = 'Could not connect to the server.';
+    }
+});
+        
+        // 4. ADDED: Event listener for when the success modal is hidden
+        document.getElementById('successModal').addEventListener('hidden.bs.modal', () => {
+            studentForm.reset(); // Clear the form fields
+            loadStudents();      // Refresh the student list
+        });
+
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById("hamburger").classList.toggle("active");
+            document.getElementById("overlay").classList.toggle("active");
+        }
+
+        document.addEventListener('DOMContentLoaded', loadStudents);
+    </script>
+  </body>
+</html>

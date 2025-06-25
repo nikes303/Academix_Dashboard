@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academix</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/css/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootstrap-icons/font/bootstrap-icons.css"
+      rel="stylesheet"
+    />
+    <style>
+      body {
+        min-height: 100vh; /* Ensure background covers the viewport */
+        margin: 0;
+        background: linear-gradient(to bottom right, #1e054a, #6a2b9e);
+        color: white;
+        font-family: "Roboto Mono", monospace;
+      }
+
+      /* Animation for display picture */
+      @keyframes fadeInZoom {
+        0% {
+          opacity: 0;
+          transform: scale(0.5);
+        }
+        100% {
+          opacity: 1;
+          transform: scale(1);
+        }
+      }
+
+      .display-picture {
+        position: absolute;
+        top: 50px;
+        left: 100px;
+        z-index: 1;
+      }
+
+      .display-picture img {
+        width: 650px; /* Adjust size */
+        height: auto; /* Maintain aspect ratio */
+        border-radius: 10px;
+        animation: fadeInZoom 1.5s ease-out; /* Apply the animation */
+      }
+
+      .logo {
+        position: absolute;
+        top: 50px;
+        left: 770px;
+      }
+
+      .logo img {
+        width: 500px; /* Adjust logo size */
+        height: auto; /* Maintain aspect ratio */
+      }
+
+      .info-container {
+        position: absolute;
+        top: 250px;
+        left: 800px;
+        max-width: 600px; /* Restrict the container width */
+        width: 90%; /* Make it responsive */
+        padding: 20px; /* Add spacing inside the container */
+      }
+
+      .info-container p {
+        text-align: justify; /* Even alignment for paragraph text */
+        word-wrap: break-word; /* Ensure long words break into new lines */
+        margin: 0; /* Avoid unnecessary space around the text */
+      }
+
+      .social-icons a {
+        margin: 0 10px;
+        color: white;
+        font-size: 24px;
+        text-decoration: none;
+      }
+
+      .social-icons a:hover {
+        opacity: 0.8;
+      }
+
+      .join-us-btn {
+        background-color: #6b3131;
+        border: 2px solid white;
+        border-radius: 25px;
+        color: white;
+        padding: 10px 20px;
+        font-size: 18px;
+      }
+
+      .join-us-btn:hover {
+        background-color: #8e3b3b;
+        color: white;
+      }
+    </style>
+  </head>
+
+  <body>
+    <div class="display-picture">
+      <img src="display_picture.png" alt="Main Photo" class="img-fluid" />
+    </div>
+    <div class="logo">
+      <img src="logo.png" alt="Academix Logo" />
+    </div>
+    <div class="info-container">
+      <p>
+        Academix is a dashboard designed for teachers to efficiently manage and
+        monitor student activities. The goal is to streamline academic tasks and
+        provide a user-friendly interface for educators.
+      </p>
+      <br />
+      <h5>Contact Us:</h5>
+      <div class="social-icons">
+        <a href="#" target="_blank"><i class="bi bi-twitter"></i></a>
+        <a href="#" target="_blank"><i class="bi bi-instagram"></i></a>
+        <a href="#" target="_blank"><i class="bi bi-github"></i></a>
+        <a href="#" target="_blank"><i class="bi bi-discord"></i></a>
+        <a href="#" target="_blank"><i class="bi bi-whatsapp"></i></a>
+        <a href="#" target="_blank"><i class="bi bi-facebook"></i></a>
+      </div>
+      <div class="mt-4">
+        <a href="login.html">
+          <button class="btn join-us-btn">Join Us</button>
+        </a>
+      </div>
+    </div>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+  </body>
+</html>

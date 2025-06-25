@@ -1,0 +1,233 @@
+<!DOCTYPE html>
+<html lang="en">
+  <head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Academix - Attendance</title>
+    <link
+      href="https://cdn.jsdelivr.net/npm/bootswatch@5.3.0/dist/minty/bootstrap.min.css"
+      rel="stylesheet"
+    />
+    <style>
+      /* Correctly styles the active Present/Absent buttons */
+      .btn-check:checked + .btn-outline-success {
+        color: #fff;
+        background-color: #198754;
+        border-color: #198754;
+      }
+      .btn-check:checked + .btn-outline-danger {
+        color: #fff;
+        background-color: #dc3545;
+        border-color: #dc3545;
+      }
+
+      /* Basic layout styles */
+      html, body { height: 100%; margin: 0; padding: 0; }
+      body { display: flex; flex-direction: column; background-color: #f8f9fa; }
+      .content-wrapper { flex: 1 0 auto; }
+      header { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: linear-gradient(to bottom right, #1e054a, #6a2b9e); position: sticky; top: 0; z-index: 1021; }
+      .header-logo { height: 400px; width: auto; position: relative; top: 100px; left: 10px; }
+      .footer { flex-shrink: 0; background: linear-gradient(to bottom right, #1e054a, #6a2b9e); color: white; padding: 10px 20px; text-align: center; width: 100%; }
+      .sidebar { height: 100vh; position: fixed; top: 0; left: -250px; background-color: #f8f9fa; width: 240px; padding-top: 20px; transition: left 0.3s; z-index: 1030; }
+      .sidebar.active { left: 0; }
+      #overlay { position: fixed; top: 0; left: 0; width: 100%; height: 100%; background-color: rgba(0, 0, 0, 0.5); z-index: 1025; display: none; }
+      #overlay.active { display: block; }
+      .sidebar a { display: block; color: #333; padding: 10px 15px; text-decoration: none; }
+      .sidebar a:hover { background-color: #ddd; }
+    </style>
+  </head>
+  <body>
+    <header class="navbar navbar-expand-lg navbar-light px-3">
+      <span style="font-size: 50px; color: white; cursor: pointer" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
+      <img src="academix_nobg.png" alt="Academix Logo" class="header-logo" />
+    </header>
+    <div id="overlay" onclick="toggleSidebar()"></div>
+    <div class="sidebar" id="sidebar">
+      <a href="ip.html">Dashboard</a>
+      <a href="attendance.html">Attendance</a>
+      <a href="performance.html">Performance</a>
+      <a href="studentdetails.html">Student Details</a>
+      <a href="teacher_todo.html">To-Do List</a>
+      <a href="profile.html">Profile</a>
+      <a href="main.html">Logout</a>
+    </div>
+
+    <div class="content-wrapper container-fluid p-4">
+        <h2 style="font-family: 'Roboto Mono', monospace; font-size: 50px">
+            <b>Attendance</b>
+        </h2>
+
+        <!-- Section and Branch Selection Form -->
+        <div class="card p-3 my-4">
+            <form id="selectClassForm" class="d-flex flex-wrap align-items-center">
+                <!-- Branch -->
+                <div class="mb-3 me-3">
+                    <label for="branchSelect" class="form-label"><b>Branch *</b></label>
+                    <select class="form-select" id="branchSelect" required>
+                        <option value="" selected disabled>Select a branch</option>
+                        <option value="ISE">Information Science (ISE)</option>
+                        <option value="CSE">Computer Science (CSE)</option>
+                        <option value="ECE">Electronics & Communication (ECE)</option>
+                    </select>
+                </div>
+                <!-- Section -->
+                <div class="mb-3 me-3">
+                    <label class="form-label"><b>Section *</b></label>
+                    <div class="d-flex">
+                        <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionA" value="A" required /><label class="form-check-label" for="sectionA">A</label></div>
+                        <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionB" value="B" /><label class="form-check-label" for="sectionB">B</label></div>
+                        <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionC" value="C" /><label class="form-check-label" for="sectionC">C</label></div>
+                    </div>
+                </div>
+                 <!-- Date -->
+                <div class="mb-3 me-3">
+                    <label for="dateSelect" class="form-label"><b>Date *</b></label>
+                    <input type="date" class="form-control" id="dateSelect" required>
+                </div>
+                <!-- Fetch Button -->
+                <div class="align-self-end mb-3">
+                     <button type="submit" class="btn btn-primary">Fetch Students</button>
+                </div>
+            </form>
+        </div>
+    
+        <!-- Attendance Table and Submission Area -->
+        <div id="attendance-section" class="my-4" style="display: none;">
+            <table class="table table-hover">
+                <thead>
+                    <tr>
+                        <th scope="col">Name</th>
+                        <th scope="col">USN</th>
+                        <th scope="col" class="text-center">Mark Attendance</th>
+                    </tr>
+                </thead>
+                <tbody id="attendanceTableBody">
+                    <!-- Rows will be appended here by the script -->
+                </tbody>
+            </table>
+            <div class="text-center mt-3">
+                <button id="submitAttendanceBtn" class="btn btn-success btn-lg">Submit Attendance</button>
+            </div>
+        </div>
+        
+        <!-- Message Box for feedback -->
+        <div id="message-box" class="alert mt-3" role="alert" style="display: none;"></div>
+    </div>
+
+    <footer class="footer">
+      <p>&copy; 2025 Academix</p>
+    </footer>
+
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
+    <script>
+        const API_URL = 'http://localhost:3000/api';
+        const classForm = document.getElementById('selectClassForm');
+        const attendanceSection = document.getElementById('attendance-section');
+        const tableBody = document.getElementById('attendanceTableBody');
+        const submitBtn = document.getElementById('submitAttendanceBtn');
+        const messageBox = document.getElementById('message-box');
+
+        const showMessage = (message, isError = false) => {
+            messageBox.textContent = message;
+            messageBox.className = `alert mt-3 ${isError ? 'alert-danger' : 'alert-success'}`;
+            messageBox.style.display = 'block';
+            setTimeout(() => { messageBox.style.display = 'none'; }, 4000);
+        };
+
+        classForm.addEventListener('submit', async (e) => {
+            e.preventDefault();
+            const branch = document.getElementById('branchSelect').value;
+            const section = document.querySelector('input[name="section"]:checked')?.value;
+
+            if (!branch || !section) {
+                showMessage("Please select both a branch and a section.", true);
+                return;
+            }
+
+            try {
+                const response = await fetch(`${API_URL}/class-list?branch=${branch}&section=${section}`);
+                const result = await response.json();
+                tableBody.innerHTML = '';
+
+                if (response.ok && result.data.length > 0) {
+                    result.data.forEach((student, index) => {
+                        const row = document.createElement('tr');
+                        row.setAttribute('data-usn', student.usn);
+                        row.innerHTML = `
+                            <td>${student.name}</td>
+                            <td>${student.usn}</td>
+                            <td class="text-center">
+                                <div class="btn-group" role="group">
+                                    <input type="radio" class="btn-check" name="attendance_${index}" id="present_${index}" autocomplete="off" value="Present" checked>
+                                    <label class="btn btn-outline-success" for="present_${index}">Present</label>
+
+                                    <input type="radio" class="btn-check" name="attendance_${index}" id="absent_${index}" autocomplete="off" value="Absent">
+                                    <label class="btn btn-outline-danger" for="absent_${index}">Absent</label>
+                                </div>
+                            </td>
+                        `;
+                        tableBody.appendChild(row);
+                    });
+                    attendanceSection.style.display = 'block';
+                } else {
+                    attendanceSection.style.display = 'none';
+                    showMessage(result.data.length === 0 ? "No students found for this class." : "Error fetching students.", true);
+                }
+            } catch (error) {
+                console.error('Failed to fetch students:', error);
+                showMessage("Could not connect to the server to fetch students.", true);
+            }
+        });
+
+        submitBtn.addEventListener('click', async () => {
+            const date = document.getElementById('dateSelect').value;
+            if (!date) {
+                showMessage("Please select a date.", true);
+                return;
+            }
+
+            const records = [];
+            const rows = tableBody.querySelectorAll('tr');
+
+            rows.forEach((row, index) => {
+                const usn = row.getAttribute('data-usn');
+                const status = document.querySelector(`input[name="attendance_${index}"]:checked`).value;
+                records.push({ usn, date, status });
+            });
+
+            if (records.length === 0) {
+                showMessage("No students in the list to submit.", true);
+                return;
+            }
+            
+            try {
+                const response = await fetch(`${API_URL}/attendance`, {
+                    method: 'POST',
+                    headers: { 'Content-Type': 'application/json' },
+                    body: JSON.stringify(records)
+                });
+                const result = await response.json();
+                showMessage(result.message, !response.ok);
+                if (response.ok) {
+                     attendanceSection.style.display = 'none';
+                     classForm.reset();
+                     document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0];
+                }
+            } catch (error) {
+                console.error('Failed to submit attendance:', error);
+                showMessage("Could not connect to the server to submit attendance.", true);
+            }
+        });
+        
+        document.addEventListener('DOMContentLoaded', () => {
+            document.getElementById('dateSelect').value = new Date().toISOString().split('T')[0];
+        });
+
+        function toggleSidebar() {
+            document.getElementById("sidebar").classList.toggle("active");
+            document.getElementById("hamburger").classList.toggle("active");
+            document.getElementById("overlay").classList.toggle("active");
+        }
+    </script>
+  </body>
+</html>
