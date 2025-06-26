@@ -15,7 +15,7 @@ app.use(cors());
 app.use(express.json());
 // In server.js, add this line after app.use(express.json());
 
-app.use(express.static('frontend'));
+
 
 // --- 3. FILE UPLOAD (MULTER) CONFIGURATION ---
 // This setup is now in one clean block.
