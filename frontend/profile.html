@@ -152,7 +152,7 @@
         <a href="studentdetails.html">Student Details</a>
         <a href="teacher_todo.html">To-Do List</a>
         <a href="profile.html">Profile</a>
-        <a href="#logout">Logout</a>
+        <a href="index.html">Logout</a>
     </div>
     
     <div class="container mt-5">
@@ -261,11 +261,15 @@
               <div class="mb-3">
                 <label for="editDept" class="form-label">Department</label>
                 <select class="form-select" id="editDept" required>
-                  <option value="Computer Science">Computer Science</option>
-                  <option value="Mathematics">Mathematics</option>
-                  <option value="Physics">Physics</option>
-                  <option value="Biology">Biology</option>
-                  <option value="Chemistry">Chemistry</option>
+              <option value="" selected disabled>Select a department</option>
+              <option value="ISE">ISE</option>
+              <option value="CSE">CSE</option>
+              <option value="EEE">EEE</option>
+              <option value="ME">ME</option>
+              <option value="IEM">IEM</option>
+              <option value="CE">CE</option>
+              <option value="ECE">ECE</option>
+              <option value="AIML">AIML</option>
                 </select>
               </div>
               <div class="mb-3">
@@ -302,13 +306,20 @@
       <p>&copy; 2025 Academix</p>
     </footer>
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
-    <script>
-    const API_URL = 'http://localhost:3000';
+        <script>
+    // CORRECTED: Define the base URL without /api
+    let API_BASE_URL;
+
+    if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+      API_BASE_URL = 'http://localhost:3000'; 
+    } else {
+      API_BASE_URL = 'https://academix-backend-p6o4.onrender.com';
+    }
+
     const messageBox = document.getElementById('message-box');
     const editProfileForm = document.getElementById('editProfileForm');
     const teacherId = localStorage.getItem('teacherId');
 
-    // Shows a feedback message to the user
     const showMessage = (message, isError = false) => {
         messageBox.textContent = message;
         messageBox.className = `alert mt-3 ${isError ? 'alert-danger' : 'alert-success'}`;
@@ -318,10 +329,10 @@
         }, 4000);
     };
 
-    // FIXED: Updates the profile display on the page with new data and labels
     const updateProfileView = (data) => {
         if (data.profilePicture) {
-            document.getElementById('profile-picture-view').src = `${API_URL}/${data.profilePicture.replace(/\\/g, '/')}`;
+            // CORRECTED: Use the base URL for images
+            document.getElementById('profile-picture-view').src = `${API_BASE_URL}/${data.profilePicture.replace(/\\/g, '/')}`;
         } else {
             const initial = (data.fullName || 'N').charAt(0).toUpperCase();
             document.getElementById('profile-picture-view').src = `https://placehold.co/100x100/6a2b9e/FFFFFF?text=${initial}`;
@@ -335,7 +346,6 @@
         document.getElementById('profResearch').innerText = `Research Interests: ${data.researchInterests || 'Not Set'}`;
     };
 
-    // Fetches the user's profile data when the page loads
     async function loadProfile() {
         if (!teacherId) {
             alert('Authentication error: You are not logged in. Redirecting to login page.');
@@ -344,7 +354,8 @@
         }
 
         try {
-            const response = await fetch(`${API_URL}/api/profile/${teacherId}`);
+            // CORRECTED: Construct the full URL correctly
+            const response = await fetch(`${API_BASE_URL}/api/profile/${teacherId}`);
             if (!response.ok) {
                 const err = await response.json();
                 throw new Error(err.error || 'Failed to fetch profile data.');
@@ -357,10 +368,8 @@
         }
     }
 
-    // Pre-fill the edit modal with existing data
     document.querySelector('.btn-edit').addEventListener('click', () => {
         document.getElementById('editName').value = document.getElementById('profName').innerText;
-        // Strip labels before populating the form
         document.getElementById('editEmail').value = document.getElementById('profEmail').innerText.replace('Email: ', '');
         document.getElementById('editPhone').value = document.getElementById('profPhone').innerText.replace('Phone: ', '');
         document.getElementById('editDept').value = document.getElementById('profDept').innerText.replace('Department: ', '');
@@ -369,7 +378,6 @@
         document.getElementById('editPicture').value = ''; 
     });
     
-    // Handle the "Save Changes" form submission
     editProfileForm.addEventListener('submit', async (e) => {
         e.preventDefault();
 
@@ -387,7 +395,8 @@
         }
 
         try {
-            const response = await fetch(`${API_URL}/api/profile/${teacherId}`, {
+            // CORRECTED: Construct the full URL correctly
+            const response = await fetch(`${API_BASE_URL}/api/profile/${teacherId}`, {
                 method: 'PUT',
                 body: formData 
             });
@@ -397,20 +406,16 @@
             if (response.ok) {
                 const modal = bootstrap.Modal.getInstance(document.getElementById('editProfileModal'));
                 modal.hide();
-                // This will now work correctly
                 showMessage('Profile updated successfully!'); 
                 loadProfile(); 
             } else {
-                // Pass the error message from the backend to our showMessage function
                 throw new Error(result.error);
             }
         } catch (error) {
-            // Display the error in a more user-friendly way
             showMessage(`Error updating profile: ${error.message}`, true);
         }
     });
 
-    // Function to toggle the sidebar
     function toggleSidebar() {
         document.getElementById("sidebar").classList.toggle("active");
         document.getElementById("hamburger").classList.toggle("active");

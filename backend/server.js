@@ -8,11 +8,17 @@ const path = require('path');
 const fs = require('fs');
 const db = require('./database.js');
 
+
 // --- 2. INITIAL SETUP & MIDDLEWARE ---
 const app = express();
 const port = 3000;
 app.use(cors());
 app.use(express.json());
+
+app.use(express.static('frontend'));
+// In server.js, add this line after app.use(express.json());
+
+
 
 // --- 3. FILE UPLOAD (MULTER) CONFIGURATION ---
 // This setup is now in one clean block.

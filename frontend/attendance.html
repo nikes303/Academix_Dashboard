@@ -11,14 +11,10 @@
     <style>
       /* Correctly styles the active Present/Absent buttons */
       .btn-check:checked + .btn-outline-success {
-        color: #fff;
-        background-color: #198754;
-        border-color: #198754;
+        color: #fff; background-color: #198754; border-color: #198754;
       }
       .btn-check:checked + .btn-outline-danger {
-        color: #fff;
-        background-color: #dc3545;
-        border-color: #dc3545;
+        color: #fff; background-color: #dc3545; border-color: #dc3545;
       }
 
       /* Basic layout styles */
@@ -39,7 +35,7 @@
   <body>
     <header class="navbar navbar-expand-lg navbar-light px-3">
       <span style="font-size: 50px; color: white; cursor: pointer" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
-      <img src="academix_nobg.png" alt="Academix Logo" class="header-logo" />
+      <img src="logo.png" alt="Academix Logo" class="header-logo" />
     </header>
     <div id="overlay" onclick="toggleSidebar()"></div>
     <div class="sidebar" id="sidebar">
@@ -49,78 +45,77 @@
       <a href="studentdetails.html">Student Details</a>
       <a href="teacher_todo.html">To-Do List</a>
       <a href="profile.html">Profile</a>
-      <a href="main.html">Logout</a>
+      <a href="index.html">Logout</a>
     </div>
 
     <div class="content-wrapper container-fluid p-4">
-        <h2 style="font-family: 'Roboto Mono', monospace; font-size: 50px">
+        <h2 style="font-family: 'Roboto Mono', monospace; font-size: 50px" class="mb-4">
             <b>Attendance</b>
         </h2>
 
-        <!-- Section and Branch Selection Form -->
         <div class="card p-3 my-4">
             <form id="selectClassForm" class="d-flex flex-wrap align-items-center">
-                <!-- Branch -->
                 <div class="mb-3 me-3">
                     <label for="branchSelect" class="form-label"><b>Branch *</b></label>
                     <select class="form-select" id="branchSelect" required>
                         <option value="" selected disabled>Select a branch</option>
-                        <option value="ISE">Information Science (ISE)</option>
-                        <option value="CSE">Computer Science (CSE)</option>
-                        <option value="ECE">Electronics & Communication (ECE)</option>
+                        <option value="ISE">ISE</option>
+                        <option value="CSE">CSE</option>
+                        <option value="ECE">ECE</option>
+                        <option value="AIML">AIML</option>
+                        <option value="EEE">EEE</option>
+                        <option value="ME">ME</option>
+                        <option value="IEM">IEM</option>
+                        <option value="CE">CE</option>
                     </select>
                 </div>
-                <!-- Section -->
                 <div class="mb-3 me-3">
                     <label class="form-label"><b>Section *</b></label>
                     <div class="d-flex">
                         <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionA" value="A" required /><label class="form-check-label" for="sectionA">A</label></div>
                         <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionB" value="B" /><label class="form-check-label" for="sectionB">B</label></div>
                         <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionC" value="C" /><label class="form-check-label" for="sectionC">C</label></div>
+                        <div class="form-check me-2"><input class="form-check-input" type="radio" name="section" id="sectionD" value="D" /><label class="form-check-label" for="sectionD">D</label></div>
                     </div>
                 </div>
-                 <!-- Date -->
-                <div class="mb-3 me-3">
+                 <div class="mb-3 me-3">
                     <label for="dateSelect" class="form-label"><b>Date *</b></label>
                     <input type="date" class="form-control" id="dateSelect" required>
                 </div>
-                <!-- Fetch Button -->
                 <div class="align-self-end mb-3">
                      <button type="submit" class="btn btn-primary">Fetch Students</button>
                 </div>
             </form>
         </div>
     
-        <!-- Attendance Table and Submission Area -->
         <div id="attendance-section" class="my-4" style="display: none;">
             <table class="table table-hover">
-                <thead>
-                    <tr>
-                        <th scope="col">Name</th>
-                        <th scope="col">USN</th>
-                        <th scope="col" class="text-center">Mark Attendance</th>
-                    </tr>
-                </thead>
-                <tbody id="attendanceTableBody">
-                    <!-- Rows will be appended here by the script -->
-                </tbody>
+                <thead><tr><th>Name</th><th>USN</th><th class="text-center">Mark Attendance</th></tr></thead>
+                <tbody id="attendanceTableBody"></tbody>
             </table>
             <div class="text-center mt-3">
                 <button id="submitAttendanceBtn" class="btn btn-success btn-lg">Submit Attendance</button>
             </div>
         </div>
         
-        <!-- Message Box for feedback -->
         <div id="message-box" class="alert mt-3" role="alert" style="display: none;"></div>
     </div>
 
     <footer class="footer">
       <p>&copy; 2025 Academix</p>
     </footer>
-
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0/dist/js/bootstrap.bundle.min.js"></script>
     <script>
-        const API_URL = 'http://localhost:3000/api';
+let API_URL;
+
+// Check if the hostname is 'localhost' or '127.0.0.1' (for local development)
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  // We are on the local machine, so use the local backend URL
+  API_URL = 'http://localhost:3000/api';
+} else {
+  // We are on the live deployed site, so use the live Render URL
+  API_URL = 'https://academix-backend-p6o4.onrender.com/api'; // <-- Make sure this is your actual Render URL
+}
         const classForm = document.getElementById('selectClassForm');
         const attendanceSection = document.getElementById('attendance-section');
         const tableBody = document.getElementById('attendanceTableBody');

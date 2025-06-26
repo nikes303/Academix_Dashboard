@@ -46,7 +46,7 @@
       <a href="studentdetails.html">Student Details</a>
       <a href="teacher_todo.html">To-Do List</a>
       <a href="profile.html">Profile</a>
-      <a href="#logout">Logout</a>
+      <a href="index.html">Logout</a>
     </div>
 
     <!-- Main Content -->
@@ -118,7 +118,16 @@
     <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
     <!-- Corrected Full Script -->
     <script>
-        const API_URL = 'http://localhost:3000/api';
+let API_URL;
+
+// Check if the hostname is 'localhost' or '127.0.0.1' (for local development)
+if (window.location.hostname === 'localhost' || window.location.hostname === '127.0.0.1') {
+  // We are on the local machine, so use the local backend URL
+  API_URL = 'http://localhost:3000/api';
+} else {
+  // We are on the live deployed site, so use the live Render URL
+  API_URL = 'https://academix-backend-p6o4.onrender.com/api'; // <-- Make sure this is your actual Render URL
+}
         const ctx = document.getElementById("lineChart").getContext("2d");
         let lineChart; // Use 'let' so we can destroy and recreate the chart
 
