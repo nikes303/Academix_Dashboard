@@ -99,39 +99,52 @@ if (window.location.hostname === 'localhost' || window.location.hostname === '12
             }
         };
 
-        async function loadTasks() {
-            try {
-                const response = await fetch(`${API_URL}/tasks`);
-                const result = await response.json();
-                todoList.innerHTML = ''; 
+        // In the <script> of teacher_todo.html, REPLACE your loadTasks function with this one
 
-                if (response.ok && result.data && result.data.length > 0) { // Added 'result.data' check for robustness
-                    result.data.forEach(task => {
-                        const li = document.createElement('li');
-                        const priorityClass = getPriorityClass(task.priority);
-                        li.className = `list-group-item d-flex justify-content-between align-items-center ${priorityClass}`;
-                        li.setAttribute('data-id', task.id);
-                        li.innerHTML = `
-                            <div>
-                                <span class="${task.isCompleted ? 'text-decoration-line-through' : ''}">${task.name}</span>
-                                <small class="d-block text-muted">Due: ${task.dueDate || 'No date'}</small>
-                            </div>
-                            <button class="btn btn-sm btn-outline-danger remove-task">Remove</button>
-                        `;
-                        todoList.appendChild(li);
-                    });
-                } else if (response.ok && result.data && result.data.length === 0) {
-                    todoList.innerHTML = '<li class="list-group-item text-center">No tasks found. Add one to get started!</li>';
-                } else {
-                    // Handle cases where response is not ok, but still a valid JSON response from server
-                    console.error("Server returned an error or unexpected format:", result.error || result.message);
-                    todoList.innerHTML = `<li class="list-group-item text-center text-danger">Error from server: ${result.error || 'Unknown error'}</li>`;
-                }
-            } catch (error) {
-                console.error("Failed to load tasks:", error);
-                todoList.innerHTML = '<li class="list-group-item text-center text-danger">Could not load tasks. Please ensure the backend server is running and accessible.</li>';
-            }
+// ADD this new helper function at the top of your script
+const getPriorityBadgeClass = (priority) => {
+    switch (priority) {
+        case 'high': return 'bg-danger';
+        case 'medium': return 'bg-warning text-dark'; // Add text-dark for better contrast on yellow
+        case 'low': return 'bg-success';
+        default: return 'bg-secondary';
+    }
+};
+
+async function loadTasks() {
+    try {
+        const response = await fetch(`${API_URL}/tasks`);
+        const result = await response.json();
+        todoList.innerHTML = ''; 
+
+        if (response.ok && result.data.length > 0) {
+            result.data.forEach(task => {
+                const li = document.createElement('li');
+                // Use the helper function to get the correct badge color
+                const badgeClass = getPriorityBadgeClass(task.priority);
+                
+                li.className = `list-group-item d-flex justify-content-between align-items-center`;
+                li.setAttribute('data-id', task.id);
+                
+                // UPDATED: The innerHTML now includes a span for the badge
+                li.innerHTML = `
+                    <div>
+                        <span>${task.name}</span>
+                        <span class="badge rounded-pill ${badgeClass} ms-2">${task.priority}</span>
+                        <small class="d-block text-muted">Due: ${task.dueDate || 'No date'}</small>
+                    </div>
+                    <button class="btn btn-sm btn-outline-danger remove-task">Remove</button>
+                `;
+                todoList.appendChild(li);
+            });
+        } else {
+            todoList.innerHTML = '<li class="list-group-item text-center">No tasks found. Add one to get started!</li>';
         }
+    } catch (error) {
+        console.error("Failed to load tasks:", error);
+        todoList.innerHTML = '<li class="list-group-item text-center text-danger">Could not load tasks.</li>';
+    }
+}
 
         taskForm.addEventListener('submit', async function(e) {
             e.preventDefault();
