@@ -9,7 +9,13 @@
         * { margin: 0; padding: 0; box-sizing: border-box; }
         body, html { height: 100%; margin: 0; padding: 0; }
         header { height: 100px; display: flex; align-items: center; justify-content: space-between; padding: 0 20px; background: linear-gradient(to bottom right, #1e054a, #6a2b9e); border-bottom: 1px solid #ddd; position: sticky; left: 0; right: 0; top: 0; z-index: 1021; }
-        .header-logo { height: 400px; width: auto; max-height: none; position: relative; top: 100px; left: 10px; }
+.header-logo {
+  height: 80px; 
+  width: auto;
+  position: relative; 
+  top: 0; 
+  left: 10px;
+}
         .content { min-height: calc(100vh - 160px); padding: 20px; } /* Adjusted for footer */
         .chart-container { position: relative; margin: auto; height: 400px; width: 100%; max-width: 800px; }
         .footer { position: relative; background: linear-gradient(to bottom right, #1e054a, #6a2b9e); color: white; padding: 10px 20px; text-align: center; width: 100%;}
@@ -26,7 +32,7 @@
   <body>
     <header class="navbar navbar-expand-lg navbar-light px-3">
         <span style="font-size: 50px; color: white; cursor: pointer" onclick="toggleSidebar()" id="hamburger">&#9776;</span>
-        <img src="logo.png" alt="Academix Logo" class="header-logo" />
+        <img src="logo2.png" alt="Academix Logo" class="header-logo" />
     </header>
 
     <div id="overlay" onclick="toggleSidebar()"></div>
